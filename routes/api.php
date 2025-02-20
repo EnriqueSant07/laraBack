@@ -22,6 +22,7 @@ use App\Http\Controllers\Api\StaffController;
 Route::post('/login', [AuthController::class, 'login'])->name('api.login');
 Route::post('/logout', [AuthController::class, 'logout'])->middleware('auth:sanctum');
 Route::post('/register', [AuthController::class, 'register']);
+Route::get('/verifyToken', [AuthController::class, 'checkTokenValidity'])->name('verify.token');
 
 // Rutas protegidas
 Route::middleware('auth:sanctum')->group(function () {

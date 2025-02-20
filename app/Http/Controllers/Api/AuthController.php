@@ -46,7 +46,7 @@ class AuthController extends Controller
         }
 
         $user = Auth::user();
-        $token = $user->createToken('authToken')->plainTextToken;
+        $token = $user->createToken('authToken', ['*'], now()->addMinutes(60))->plainTextToken;
 
         return response()->json([
             'user' => $user,
@@ -66,5 +66,23 @@ class AuthController extends Controller
     public function user(Request $request)
     {
         return response()->json($request->user());
+    }
+
+    public function checkTokenValidity(Request $request)
+    {
+        $user = auth()->user();
+
+        if (!$user) {
+            return response()->json(['message' => 'Token inválido o expirado'], 401);
+        }
+
+        // Obtener la fecha de expiración del token desde el campo "expires_at" (ajusta según tu implementación)
+        $tokenExpiration = $user->tokens()->first()->expires_at ?? null;
+
+        if ($tokenExpiration && now()->greaterThan($tokenExpiration)) {
+            return response()->json(['message' => 'Token expirado'], 401);
+        }
+
+        return response()->json(['message' => 'Token válido'], 200);
     }
 }
